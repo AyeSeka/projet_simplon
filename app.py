@@ -182,7 +182,8 @@ def deconnexion():
     return redirect(url_for('index'))
 
 
-#Dashbord_admin
+
+##########Dashbord_admin############
 @app.route("/dash")
 @login_required
 def dash():
@@ -194,12 +195,7 @@ def dash():
     return render_template("admin/dash.html", user_id =user_id, data=data)
 
 
-
-
-
-
-
-##########Deployement_model###########
+#Deployement_model#
 # Fonction pour prédire les ventes pour un mois donné
 def predict_sales_for_month(year, month, model_path):
     days_in_month = calendar.monthrange(year, month)[1]
@@ -298,12 +294,20 @@ def prediction_produit():
             return render_template("admin/dash.html")
 
 
-
-#Dashbord_admin
+#vendeur
 @app.route("/vendeur")
 @login_required
 def vendeur():
     return render_template("admin/vendeur.html")
+
+#client
+@app.route("/client")
+@login_required
+def client():
+    cursor = conn.cursor()
+    cursor.execute( "SELECT * FROM Client ")
+    data = cursor.fetchall()
+    return render_template("admin/client.html", data=data)
    
 
 

@@ -1,0 +1,51 @@
+{% extends "Partials/Base_dash.html" %}
+{% block body %}
+  <!-- partial -->
+  <div class="main-panel">
+      <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title">Liste des clients</p>
+              <div class="row">
+                <div class="col-12">
+                  <div class="table-responsive" style="height: 500px;overflow-y: scroll;">
+                    <table id="example" class="display expandable-table" style="width:100%">
+                      <thead>
+                        <tr>
+                          <th>N°</th>
+                          <th>Nom & Prenom</th>
+                          <th>Genre</th>
+                          <th>Numéro de telephone</th>
+                          <th>Actions</th>
+                        </tr>
+                        {% for item in data %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.NomClient }}</td>
+                            <td>{{ item.GenreClient }}</td>
+                            <td>{{ item.TelephoneClient}}</td>
+                            <td>
+                                <button type="button" class="btn btn-primary">Modifier</button>
+                                <button type="button" class="btn btn-danger">Supprimer</button>
+                              </td>
+                        </tr>
+                        {% endfor %}
+                        <!-- <tr>
+                          <td>1</td>
+                          <td>Candia Kamara</td>
+                          <td>female</td>
+                          <td>01010010100</td>
+                          <td>
+                            <button type="button" class="btn btn-primary">Modifier</button>
+                            <button type="button" class="btn btn-danger">Supprimer</button>
+                          </td>
+                        </tr> -->
+                      </thead>
+                  </table>
+                  </div>
+                </div>
+              </div>
+
+      </div>
+{% endblock body %}  
