@@ -1,0 +1,195 @@
+{% extends "Partials/Base_dash.html" %}
+{% block body %}
+
+  <!-- partial -->
+  <div class="main-panel">
+    <div class="content-wrapper">
+      <div class="row">
+        <div class="col-md-12 grid-margin">
+          <div class="row">
+            <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+              {%for data in data%}
+              <h3 class="font-weight-bold">Bienvenue {{data.NomAdmin}} {{data.PrenomAdmin}}</h3>
+              {%endfor%}
+              <!-- <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary">3 unread alerts!</span></h6> -->
+            </div>
+            <div class="col-12 col-xl-4">
+             <div class="justify-content-end d-flex">
+              <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
+                <label for="fileUpload" class="btn btn-sm btn-light bg-white">
+                  <b>Importer Fichier</b>
+                  <input type="file" id="fileUpload" name="fileUpload" accept=".pdf" style="display: none;" onchange="form.submit()">
+                </label>
+              </div>            
+              <div class="dropdown flex-md-grow-1 flex-xl-grow-0">
+                <button class="btn btn-sm btn-light bg-white" type="button" aria-haspopup="true" aria-expanded="true" onclick="exportPDF()">
+                  <b>Exporter Rapport</b>
+                </button>
+              </div>
+             </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row" id="kpi">
+        <div class="col-12">
+          <h3 class=" mb-4">Indicateur de performances</h3>
+        </div>
+        <div class="col-md-3 mb-4 stretch-card transparent">
+          <div class="card card-tale">
+            <div class="card-body">
+              <p class="mb-4">Chiffre d'affaire</p>
+              <p class="fs-30 mb-2">4 725 847 F</p>
+              <p></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4 stretch-card transparent">
+          <div class="card card-dark-blue">
+            <div class="card-body">
+              <p class="mb-4">Nombre de Vente</p>
+              <p class="fs-30 mb-2">16254</p>
+              <p></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4 stretch-card transparent">
+          <div class="card card-light-blue">
+            <div class="card-body">
+              <p class="mb-4">Nombre de Vendeur</p>
+              <p class="fs-30 mb-2">780</p>
+              <p></p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-3 mb-4 stretch-card transparent">
+          <div class="card card-light-danger">
+            <div class="card-body">
+              <p class="mb-4">Nombre de Gestionnaire</p>
+              <p class="fs-30 mb-2">102</p>
+              <p></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="row" id="graph">
+        <div class="col-12">
+          <h3 class=" mb-4">Tendances et Repartitions </h3>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title">Chiffre d'affaire par Mois</p>
+              <!-- <p class="font-weight-500">The total number of sessions within the date range. It is the period time a user is actively engaged with your website, page or app, etc</p> -->
+              <div class="d-flex flex-wrap mb-5">
+                <!-- <div class="mr-5 mt-3">
+                  <p class="text-muted">Order value</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">12.3k</h3>
+                </div>
+                <div class="mr-5 mt-3">
+                  <p class="text-muted">Orders</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">14k</h3>
+                </div>
+                <div class="mr-5 mt-3">
+                  <p class="text-muted">Users</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">71.56%</h3>
+                </div> -->
+                <!-- <div class="mt-3">
+                  <p class="text-muted">Downloads</p>
+                  <h3 class="text-primary fs-30 font-weight-medium">34040</h3>
+                </div>  -->
+              </div>
+              <canvas id="order-chart"></canvas>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+             <div class="d-flex justify-content-between">
+              <p class="card-title">Sales Report</p>
+             </div>
+              <div id="sales-legend" class="chartjs-legend mt-4 mb-2"></div>
+              <canvas id="sales-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 grid-margin">
+            <div class="row">
+                <div class="col-12 col-xl-8 mb-4 mb-xl-0">
+                    <!-- Zone de message (optionnelle) -->
+                </div>
+                <div class="col-12 col-xl-4">
+                    <div class="justify-content-end d-flex">
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Prediction Vente 2024
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                              <form action="/prediction_produit" method="POST">
+                                <input type="hidden" name="month_value" id="month_value" value="">
+                                <a class="dropdown-item" onclick="submitForm(1)">Janvier</a>
+                                <a class="dropdown-item" onclick="submitForm(2)">Février</a>
+                                <a class="dropdown-item" onclick="submitForm(3)">Mars</a>
+                                <a class="dropdown-item" onclick="submitForm(4)">Avril</a>
+                                <a class="dropdown-item" onclick="submitForm(5)">Mai</a>
+                                <a class="dropdown-item" onclick="submitForm(6)">Juin</a>
+                                <a class="dropdown-item" onclick="submitForm(7)">Juillet</a>
+                                <a class="dropdown-item" onclick="submitForm(8)">Août</a>
+                                <a class="dropdown-item" onclick="submitForm(9)">Septembre</a>
+                                <a class="dropdown-item" onclick="submitForm(10)">Octobre</a>
+                                <a class="dropdown-item" onclick="submitForm(11)">Novembre</a>
+                                <a class="dropdown-item" onclick="submitForm(12)">Décembre</a>
+                            </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="tableau_prediction">
+      <div class="col-md-12 grid-margin stretch-card">
+        <div class="card">
+          <div id="resultsSection" class="card-body">
+            <p class="card-title">Prédiction des Meilleurs Produits pour {{ month_name }} {{ year }}</p>
+            <div class="row">
+              <div class="col-12">
+                <div class="table-responsive">
+                  <table id="example" class="display expandable-table" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>N°</th>
+                            <th>Produit</th>
+                            <th>Catégorie</th>
+                            <th>Nombre de vente</th>
+                            <th>Chiffre d'affaire</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in prediction %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ item.Product }}</td>
+                            <td>{{ item.Type }}</td>
+                            <td>{{ item.Vente }}</td>
+                            <td>{{ item.CA }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+  
+  <!-- main-panel ends -->
+</div>
+{% endblock body %}  

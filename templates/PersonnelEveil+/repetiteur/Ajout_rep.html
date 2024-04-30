@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{url_for('static', filename='/img/logo_Eveil+.png')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='/css/bootstrap.min.css')}}">
+        <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"/>
+        <link rel="stylesheet" href="{{url_for('static', filename='/css/initialize.css')}}">
+        <link rel="stylesheet" href="{{url_for('static', filename='/css/style.css')}}">
+            
+        <title>Eveil+</title>
+        <script>
+            function checkPassword() {
+                var password = document.getElementById("mot_de_passe").value;
+                var confirmPassword = document.getElementById("confirm_mot_de_passe").value;
+    
+                if (password !== confirmPassword) {
+                    document.getElementById("password-error").innerHTML = "Les mots de passe ne correspondent pas";
+                    document.getElementById("submit-button").disabled = true;
+                } else {
+                    document.getElementById("password-error").innerHTML = "";
+                    document.getElementById("submit-button").disabled = false;
+                }
+            }
+        </script>
+    </head>
+    <body class="body_page_connx">
+        <section class="section_connexion_page">
+            <main class="section_inscriptionRepetiteur_page_container">
+                <div class="section_inscriptionRepetiteur_container1 py-3">
+
+                    {% with messages=get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{category}}" id="flash-message"> {{message}} </div>
+                            {%endfor%}
+                        {%endif%}
+                    {% endwith %} 
+
+                    <div class="form_titr_inscriptionParent"><h2> Inscription Répétiteur<h3></div>
+                    <form action="{{url_for('Succes_ajout_repetiteur')}}" method="post">
+                        <div class="inscriptionParent_login1">
+                            <input type="text" class="input" name="NomRepetiteur" placeholder="Votre Nom">
+                            <input type="text" class="input" name="PrenomRepetiteur" placeholder="Votre Prenom">
+                        </div>
+                        <div class="inscriptionParent_login1">
+                            <!-- <input type="text"  name="lieu_hab_rep" placeholder="Votre lieu d'habitation Ex: Cocody\2 plateau"> -->
+                            <input type="email" class="input"  name="Email" placeholder="Votre email">
+                            <select name="IdCompetence" class="input">
+                                <option>--Vos compétences--</option>
+                            {% for Competence in Competence %}
+                                <option value="{{Competence.IdCompetence}}">{{Competence.NomCompetence}}</option>
+                            {%endfor%}
+                        </select>
+                            <input type="hidden" name="Roles" value="Repetiteur">
+                            <input type="hidden" name="EstActif" value="1">
+                         </div>
+                         <!-- <div class="inscriptionParent_login1">
+                            <input type="date"  name="DateNaissance" >
+                            <input type="number"  name="AnneeExperience" placeholder="Votre année d'expérience">
+                            
+                         </div> -->
+                         
+                         <div class="inscriptionParent_login1">
+                            <input type="password" class="input" name="mot_de_passe" placeholder="Mot de passe" id="mot_de_passe" oninput="checkPassword()">
+                            <input type="password" class="input" name="confirm_mot_de_passe" placeholder="Confirmer votre mot de passe" id="confirm_mot_de_passe" oninput="checkPassword()">
+                         </div>
+                         <p id="password-error" style="color: red;"></p>
+                         <input type="submit" value="VALIDER"  id="submit-button" class="btn btn-secondary py-2" style="background-color: #6ebca8; border:none; width: 20%; font-size:1.3em; font-weight: bold;">
+                    </form>
+                    <div class="inscriptionParent_login2">
+                        Déja un compte ? <a href="/connexion"> Connecter vous ici</a>
+                    </div>
+                </div>
+            </main>
+        </section>
+
+        <script>
+            // Sélectionnez l'élément contenant le message flash
+            const flashMessage = document.getElementById('flash-message');
+            
+            // Définissez un délai (en millisecondes) avant que le message ne disparaisse
+            const delay = 7000; // 7 secondes
+            
+            // Utilisez setTimeout pour masquer le message après le délai
+            setTimeout(function() {
+                flashMessage.style.display = 'none';
+            }, delay);
+        </script> 
+        <script src="{{url_for('static', filename='/js/bootstrap.bundle.min.js')}}" ></script>
+        <script src="{{url_for('static', filename='/js/index.js')}}" ></script>
+    </body>
+</html>

@@ -1,0 +1,163 @@
+{% extends "Partials/Base_dash.html" %}
+{% block body %}    
+    <section class="main">
+          <div class="main-top">
+            <h1>Attendance</h1>
+            <!-- <li><a href="/profil_persoEveil" class="logo">
+              <img src="{{ url_for('static', filename='uploads/images_profil_perso/' + usersPersoEveil.path_PhotoProfil) }}">
+              <span class="nav-items">{{usersPersoEveil.PrenomPersoEveil}} {{usersPersoEveil.NomPersoEveil}}</span>
+            </a></li> -->
+            <!-- <i class="fas fa-user-cog"></i> -->
+          </div>
+          <div class="users">
+            <div class="card">
+              <img src="./pic/img1.jpg">
+              <h4>Parent</h4>
+              <!-- <p>Ui designer</p> -->
+              <div class="per">
+                <table>
+                  <tr>
+                    <td><span style="font-size: 3em;">{{TotalParent}}</span></td>
+                    <td><span style="font-size: 3em;"> {{poucentageParent}}%</span></td>
+                  </tr>
+                  <tr>
+                    <td>Total</td>
+                    <td>Poucentage</td>
+                  </tr>
+                </table>
+              </div>
+              <!-- <button>Profile</button> -->
+            </div>
+            <div class="card">
+              <img src="./pic/img2.jpg">
+              <h4>Répétiteur</h4>
+              <!-- <p>Progammer</p> -->
+              <div class="per">
+                <table>
+                  <tr>
+                    <td><span style="font-size: 3em;"> {{TotalRepetiteur}}</span></td>
+                    <td><span style="font-size: 3em;"> {{poucentageRepetiteur}}%</span></td>
+                  </tr>
+                  <tr>
+                    <td>Total</td>
+                    <td>Poucentage</td>
+                  </tr>
+                </table>
+              </div>
+              <!-- <button>Profile</button> -->
+            </div>
+            <div class="card">
+              <img src="./pic/img4.jpg">
+              <h4>Administrateur</h4>
+              <!-- <p>Ui designer</p> -->
+              <div class="per">
+                <table>
+                  <tr>
+                    <td><span style="font-size: 3em;">{{TotalPersonnel}}</span></td>
+                    <td><span style="font-size: 3em;"> {{poucentagePersonnel}} %</span></td>
+                  </tr>
+                  <tr>
+                    <td>Total</td>
+                    <td>Poucentage</td>
+                  </tr>
+                </table>
+              </div>
+              <!-- <button>Profile</button> -->
+            </div>
+            <div class="card">
+              <img src="./pic/img3.jpg">
+              <h4>contrat</h4>
+              <!-- <p>tester</p> -->
+              <div class="per">
+                <table>
+                  <tr>
+                    <td><span style="font-size: 3em;"> {{TotalContrat}}</span></td>
+                    <!-- <td><span> %</span></td> -->
+                  </tr>
+                  <tr>
+                    <td>Total</td>
+                    <!-- <td>Year</td> -->
+                  </tr>
+                </table>
+              </div>
+              <!-- <button>Profile</button> -->
+            </div>
+            
+          </div>
+    
+          <section class="attendance">
+            <div class="attendance-list">
+              <h1>Attendance List</h1>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Depart</th>
+                    <th>Date</th>
+                    <th>Join Time</th>
+                    <th>Logout Time</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>01</td>
+                    <td>Sam David</td>
+                    <td>Design</td>
+                    <td>03-24-22</td>
+                    <td>8:00AM</td>
+                    <td>3:00PM</td>
+                    <td><button>View</button></td>
+                  </tr>
+                  <tr class="active">
+                    <td>02</td>
+                    <td>Balbina Kherr</td>
+                    <td>Coding</td>
+                    <td>03-24-22</td>
+                    <td>9:00AM</td>
+                    <td>4:00PM</td>
+                    <td><button>View</button></td>
+                  </tr>
+                  <tr>
+                    <td>03</td>
+                    <td>Badan John</td>
+                    <td>testing</td>
+                    <td>03-24-22</td>
+                    <td>8:00AM</td>
+                    <td>3:00PM</td>
+                    <td><button>View</button></td>
+                  </tr>
+                  <tr>
+                    <td>04</td>
+                    <td>Sara David</td>
+                    <td>Design</td>
+                    <td>03-24-22</td>
+                    <td>8:00AM</td>
+                    <td>3:00PM</td>
+                    <td><button>View</button></td>
+                  </tr>
+                  <!-- <tr >
+                    <td>05</td>
+                    <td>Salina</td>
+                    <td>Coding</td>
+                    <td>03-24-22</td>
+                    <td>9:00AM</td>
+                    <td>4:00PM</td>
+                    <td><button>View</button></td>
+                  </tr>
+                  <tr >
+                    <td>06</td>
+                    <td>Tara Smith</td>
+                    <td>Testing</td>
+                    <td>03-24-22</td>
+                    <td>9:00AM</td>
+                    <td>4:00PM</td>
+                    <td><button>View</button></td>
+                  </tr> -->
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+{% endblock body %}

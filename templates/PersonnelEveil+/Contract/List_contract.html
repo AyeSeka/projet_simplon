@@ -1,0 +1,400 @@
+{% extends "Partials/Base_dash.html" %}
+{% block body %}    
+    <section class="main">
+          <section class="attendance">
+            <div class="attendance-list">
+              <div
+                style="
+                    height:50px;
+                    margin-top:20px;
+                    display:flex;
+                    justify-content:flex-end;
+                    padding-right:20px;
+                "
+              >
+              <button style="
+              width: 10%;
+              cursor: pointer;
+              background: transparent;
+              border: 1px solid #4AD489;
+              border-radius: 5px;
+              transition: background-color 0.3s ease; /* Ajout d'une transition pour une animation fluide */
+          "
+              onmouseover="this.style.backgroundColor='#4AD489'; this.style.color='white'"
+              onmouseout="this.style.backgroundColor='transparent'; this.style.color='black'"
+        >
+        <a href="" 
+        style="
+        width: 100%;
+        padding: 12px 30px;
+        background: transparent;
+        text-decoration: none;
+        transition: background-color 0.3s ease; /* Ajout d'une transition pour une animation fluide */
+    "
+        onmouseover="this.style.backgroundColor='#4AD489'; this.style.color='white'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='black'"
+        data-bs-toggle="modal" data-bs-target="#exampleModal">Ajouter</a></button>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Ajouter un nouveau contract</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form action="/Success_ajout_contract" method="post">
+                    <div class="mb-3 row">
+                      <div class="col-md-6">
+                        <label for="exampleDataList1" class="form-label">Nom du Parent</label>
+                        <!-- <input class="form-control" list="datalistOptions1" id="exampleDataList1" name="IdParent" placeholder="Taper pour rechercher...">
+                        <datalist id="datalistOptions1">
+                        {% for ListParent in ListParent %}
+                            <option value="{{ListParent.0}}">{{ListParent.PrenomParent}} {{ListParent.NomParent}} </option>
+                        {% endfor %}
+                        </datalist> -->
+                        <select class="form-select" name="IdParent" id="exampleDataList1">
+                            <option value="{{ListParent.0}}">Choisissez le parent</option>
+                            {% for ListParent in ListParent %}
+                                <option value="{{ListParent.0}}">{{ListParent.PrenomParent}} {{ListParent.NomParent}}</option>
+                            {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <label for="exampleDataList2" class="form-label">Nom du Répétiteur</label>
+                        <!-- <input class="form-control" list="datalistOptions2" id="exampleDataList2" name="IdRepetiteur" placeholder="Taper pour rechercher...">
+                        <datalist id="datalistOptions2">
+                        {% for ListRepetiteur in ListRepetiteur %}
+                            <option value="{{ListRepetiteur.0}}"> {{ListRepetiteur.PrenomRepetiteur}} {{ListRepetiteur.NomRepetiteur}} </option>
+                        {% endfor %}
+                        </datalist> -->
+                        <select class="form-select" name="IdRepetiteur" id="exampleDataList2">
+                            <option value="{{ListParent.0}}">Choisissez le repetiteur</option>
+                            {% for ListRepetiteur in ListRepetiteur %}
+                                <option value="{{ListRepetiteur.0}}">{{ListRepetiteur.PrenomRepetiteur}} {{ListRepetiteur.NomRepetiteur}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                      
+                      <input type="hidden" name="StatutContrat" value="1">
+                    </div><br>
+                    <div class="mb-3 row">
+                        <div class="col-md-6" >
+                            <label for="exampleDataList3" class="form-label">Classe</label>
+                            <div class="table-responsive border rounded px-4" style="height: 70px; background-color: #ffffffd5;">
+                                <p><b>Primaire</b></p>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="Classe[]" value="Primaire" id="ClassePrimaire">
+                                <label class="form-check-label" for="ClassePrimaire"> Primaire </label>
+                              </div>
+                              <p><b>College</b></p>
+                              {% for ClasseCollege in ClasseCollege %}
+                              <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="Classe[]"
+                                  value="{{ ClasseCollege[1] }}" id="ClasseCollege{{ loop.index }}">
+                                <label class="form-check-label" for="ClasseCollege{{ loop.index }}">
+                                  {{ ClasseCollege[1] }}
+                                </label>
+                              </div>
+                              {% endfor %}
+                              <p><b>Lycée</b></p>
+                              {% for ClasseLycee in ClasseLycee %}
+                              <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="Classe[]"
+                                  value="{{ ClasseLycee[1] }}" id="ClasseLycee{{ loop.index }}">
+                                <label class="form-check-label" for="ClasseLycee{{ loop.index }}">
+                                  {{ ClasseLycee[1] }}
+                                </label>
+                              </div>
+                              {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label for="exampleDataList2" class="form-label">Matière</label>
+                          <div class="table-responsive border rounded px-4" style="height: 70px; background-color: #ffffffd5;">
+                            <p><b>Primaire</b></p>
+                              <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="Matiere[]" value="Tous matiere primaire" id="MatierePrimaire">
+                                <label class="form-check-label" for="MatierePrimaire"> Tous matiere primaire </label>
+                              </div>
+                              <p><b>Sciences</b></p>
+                            {% for MatiereSciences in MatiereSciences %}
+                              <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="Matiere[]"
+                                  value="{{ MatiereSciences[1] }}" id="MatiereSciences{{ loop.index }}">
+                                <label class="form-check-label" for="MatiereSciences{{ loop.index }}">
+                                  {{ MatiereSciences[1] }}
+                                </label>
+                              </div>
+                              {% endfor %}
+                              <p><b>Litteraire</b></p>
+                              {% for MatiereLitteraire in MatiereLitteraire %}
+                              <div class="form-check">
+                                <input class="form-check-input filter-checkbox" type="checkbox" name="Matiere[]"
+                                  value="{{ MatiereLitteraire[1] }}" id="MatiereLitteraire{{ loop.index }}">
+                                <label class="form-check-label" for="MatiereLitteraire{{ loop.index }}">
+                                  {{ MatiereLitteraire[1] }}
+                                </label>
+                              </div>
+                              {% endfor %}
+
+                          </div>
+                        </div>
+                    </div><br>
+                    <div class="mb-3 row">
+                        <div class="col-md-6">
+                          <label for="DateDebut" class="form-label">Date de début</label>
+                          <input type="date" class="form-control" id="DateDebut" name="DateDebutContrat">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="DateFin" class="form-label">Date de fin</label>
+                            <input type="date" class="form-control" id="DateFin" name="DateFinContrat">
+                        </div>
+                      </div><br>
+                  
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                  <input type="submit" class="btn btn-primary" value="Valider">
+                </div>
+           
+              </div>
+            </form>
+            </div>
+          </div>
+              </div>
+              <h1>Liste des Contracts</h1>
+                {% with messages = get_flashed_messages(with_categories = true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}" id="flash-message">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+              <div class="table-responsive" style="height: 450px;">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>parents</th>
+                      <th>Répétiteurs</th>
+                      <th>Status</th>
+                      <th>Date Debut</th>
+                      <th>Date fin</th>
+                      <th>Classe</th>
+                      <th>Matière</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  
+                    <tbody>
+                        {% for ListContrats in ListContrats %}
+                        <tr>
+                            <td> {{ListContrats.0}} </td>
+                            <td> 
+                                <a href="" class="Profuser">{{ListContrats.PrenomParent}} {{ListContrats.NomParent}}</a>
+                            </td>
+                            <td> 
+                                <a href="" class="Profuser">{{ListContrats.PrenomRepetiteur}} {{ListContrats.NomRepetiteur}}</a>
+                            </td>
+                            <td>
+                                {% if ListContrats[1]== 1 %}
+                                    <span class="text-success">Actif</span>
+                                {% else %}
+                                    <span class="text-danger">Inactif</span>
+                                {% endif %}
+                            </td>
+                        <td>{{ListContrats.DateDebutContrat}}</td>
+                        <td>{{ListContrats.DateFinContrat}}</td>
+                        <td>{{ListContrats.Classe}}</td>
+                        <td>{{ListContrats.Matiere}}</td>
+                        <td class="btn-fex">
+                            <button data-bs-toggle="modal"
+                            data-bs-target="#exampleModal{{ListContrats.0}}">Modifier</button>
+
+                            <div class="modal fade" id="exampleModal{{ListContrats.0}}" tabindex="-1" aria-labelledby="exampleModalLabel{{ListContrats.0}}" aria-hidden="true">
+                                <div class="modal-dialog">
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <h5 class="modal-title" id="exampleModalLabel{{ListContrats.0}}">Modifier un contract {{ListContrats.0}}</h5>
+                                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                      <form action="{{url_for('Modif_contrat', IdContrat= ListContrats.IdContrat)}}" method="post">
+                                        <div class="mb-3 row">
+                                          <div class="col-md-6">
+                                            <label for="exampleDataListmodif1" class="form-label">Nom du Parent</label>
+                                            <select class="form-select" name="IdParent" id="exampleDataListmodif1">
+                                                
+                                                <option value="{{ListContrats.IdParent}}">{{ListContrats.PrenomParent}} {{ListContrats.NomParent}}</option>
+                                                {% for ListParent in ListParent %}
+                                                    <option value="{{ListParent.0}}">{{ListParent.PrenomParent}} {{ListParent.NomParent}}</option>
+                                                {% endfor %}
+                                            </select>
+                                          </div>
+                                          <div class="col-md-6">
+                                            <label for="exampleDataListmodif2" class="form-label">Nom du Répétiteur</label>
+                                            <select class="form-select" name="IdRepetiteur" id="exampleDataListmodif2">
+                                                <option value="{{ListContrats.IdRepetiteur}}">{{ListContrats.PrenomRepetiteur}} {{ListContrats.NomRepetiteur}}</option>
+                                                {% for ListRepetiteur in ListRepetiteur %}
+                                                    <option value="{{ListRepetiteur.0}}">{{ListRepetiteur.PrenomRepetiteur}} {{ListRepetiteur.NomRepetiteur}}</option>
+                                                {% endfor %}
+                                            </select>
+                                            </div>
+                                          
+                                          <input type="hidden" name="StatutContrat" value="1">
+                                        </div><br>
+                                        <div class="mb-3 row">
+                                            <div class="col-md-6" >
+                                                <label for="exampleDataListmodif3" class="form-label">Classe</label>
+                                                <div class="table-responsive border rounded px-4" style="height: 70px; background-color: #ffffffd5;">
+                                                    <p><b>Primaire</b></p>
+                                                  <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="Classe[]" value="Primaire" id="ClassePrimairemodif{{ListContrats.0}}">
+                                                    <label class="form-check-label" for="ClassePrimairemodif{{ListContrats.0}}"> Primaire </label>
+                                                  </div>
+                                                  <p><b>College</b></p>
+                                                  
+                                                  
+                                                  {% for ClasseCollege in ClasseCollege %}
+                                                  <div class="form-check">
+                                                    <input class="form-check-input filter-checkbox" type="checkbox" name="Classe[]"
+                                                      value="{{ ClasseCollege[1] }}" id="ClasseCollegemodif{{ loop.index }}{{ListContrats.0}}">
+                                                    <label class="form-check-label" for="ClasseCollegemodif{{ loop.index }}{{ListContrats.0}}">
+                                                      {{ ClasseCollege[1] }}
+                                                    </label>
+                                                  </div>
+                                                  {% endfor %}
+                                                  <p><b>Lycée</b></p>
+                                                  {% for ClasseLycee in ClasseLycee %}
+                                                  <div class="form-check">
+                                                    <input class="form-check-input filter-checkbox" type="checkbox" name="Classe[]"
+                                                      value="{{ ClasseLycee[1] }}" id="ClasseLyceemodif{{ loop.index }}{{ListContrats.0}}">
+                                                    <label class="form-check-label" for="ClasseLyceemodif{{ loop.index }}{{ListContrats.0}}">
+                                                      {{ ClasseLycee[1] }}
+                                                    </label>
+                                                  </div>
+                                                  {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                              <label for="exampleDataList2" class="form-label">Matière</label>
+                                              <div class="table-responsive border rounded px-4" style="height: 70px; background-color: #ffffffd5;">
+                                                <p><b>Primaire</b></p>
+                                                  <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="Matiere[]" value="Tous matiere primaire" id="MatierePrimairemodif{{ListContrats.0}}">
+                                                    <label class="form-check-label" for="MatierePrimairemodif{{ListContrats.0}}"> Tous matiere primaire </label>
+                                                  </div>
+                                                  <p><b>Sciences</b></p>
+                                                {% for MatiereSciences in MatiereSciences %}
+                                                  <div class="form-check">
+                                                    <input class="form-check-input filter-checkbox" type="checkbox" name="Matiere[]"
+                                                      value="{{ MatiereSciences[1] }}" id="MatiereSciencesmodif{{ loop.index }}{{ListContrats.0}}">
+                                                    <label class="form-check-label" for="MatiereSciencesmodif{{ loop.index }}{{ListContrats.0}}">
+                                                      {{ MatiereSciences[1] }}
+                                                    </label>
+                                                  </div>
+                                                  {% endfor %}
+                                                  <p><b>Litteraire</b></p>
+                                                  {% for MatiereLitteraire in MatiereLitteraire %}
+                                                  <div class="form-check">
+                                                    <input class="form-check-input filter-checkbox" type="checkbox" name="Matiere[]"
+                                                      value="{{ MatiereLitteraire[1] }}" id="MatiereLitterairemodif{{ loop.index }}{{ListContrats.0}}">
+                                                    <label class="form-check-label" for="MatiereLitterairemodif{{ loop.index }}{{ListContrats.0}}">
+                                                      {{ MatiereLitteraire[1] }}
+                                                    </label>
+                                                  </div>
+                                                  {% endfor %}
+                    
+                                              </div>
+                                            </div>
+                                        </div><br>
+                                        <div class="mb-3 row">
+                                            <div class="col-md-6">
+                                              <label for="DateDebut" class="form-label">Date de début</label>
+                                              <input type="date" class="form-control" id="DateDebut" name="DateDebutContrat" value="{{ListContrats.DateDebutContrat}}">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label for="DateFin" class="form-label">Date de fin</label>
+                                                <input type="date" class="form-control" id="DateFin" name="DateFinContrat" value="{{ListContrats.DateFinContrat}}">
+                                            </div>
+                                          </div><br>
+                                      
+                                    </div>
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="color: black;">Annuler</button>
+                                      <input type="submit" class="btn btn-primary" value="Valider">
+                                    </div>
+                               
+                                  </div>
+                                </form>
+                                </div>
+                              </div>
+
+                            <button href="#" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdropsup{{ListContrats.0}}">
+                            SUPRIMER
+                            </button>
+                        <div class="modal fade" id="staticBackdropsup{{ListContrats.0}}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+                        aria-labelledby="staticBackdropLabelsup{{ListContrats.0}}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabelsup{{ListContrats.0}}">Suppression de Contrat</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" style="color: aqua;" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                Êtes-vous sûre de vouloir Supprimer définitivement le contrat entre {{ListContrats.PrenomParent}} {{ListContrats.NomParent}} et {{ListContrats.PrenomRepetiteur}} {{ListContrats.NomRepetiteur}}?
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="color: black;">Fermer</button>
+                                <a href="{{url_for('Supprimer_contrat', IdContrat= ListContrats.IdContrat)}}" class="btn btn-danger" >
+                                SUPRIMER
+                                </a>
+                                
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                            
+                        </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                  
+                </table>
+              </div>
+              
+            </div>
+          </section>
+
+          <script>
+            // Prévisualisé la photo de profil
+            function previewImage(input) {
+              const preview = document.getElementById('preview-image');
+              const file = input.files[0];
+          
+              if (file) {
+                const reader = new FileReader();
+          
+                reader.onload = function (e) {
+                  preview.src = e.target.result;
+                };
+          
+                reader.readAsDataURL(file);
+              }
+            }
+          
+          
+            // Sélectionnez l'élément contenant le message flash
+            const flashMessage = document.getElementById('flash-message')
+          
+            // Définissez un délai (en millisecondes) avant que le message ne disparaisse
+            const delay = 7000 // 7 secondes
+          
+            // Utilisez setTimeout pour masquer le message après le délai
+            setTimeout(function () {
+              flashMessage.style.display = 'none'
+            }, delay)
+          </script>
+        </section>
+{% endblock body %}

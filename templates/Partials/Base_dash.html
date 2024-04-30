@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Skydash</title>
+
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='/vendors/feather/feather.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='/vendors/ti-icons/css/themify-icons.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='/vendors/css/vendor.bundle.base.css')}}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{{url_for('static', filename='/vendors/mdi/css/materialdesignicons.min.css')}}">
+
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <link rel="stylesheet" href="{{url_for('static', filename='/css/vertical-layout-light/style.css')}}">
+    <!-- endinject -->
+    <link rel="stylesheet" href="{{url_for('static', filename='/images/conception-modele-logo-supermarche_23-2148467149.avif')}}">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.3.2/html2canvas.min.js"></script>
+  </head>
+  <body>
+    <div class="container-scroller">
+      {% include './Partials/nav_dash.html' %}
+      {% block body %}
+
+      {% endblock %}
+    </div>
+  <!-- plugins:js -->
+  <script src="{{url_for('static', filename='/vendors/js/vendor.bundle.base.js')}}"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="{{url_for('static', filename='/vendors/chart.js/Chart.min.js')}}"></script>
+  <!-- <script src="{{url_for('static', filename='/vendors/datatables.net/jquery.dataTables.js')}}"></script> -->
+  <script src="{{url_for('static', filename='/vendors/datatables.net-bs4/dataTables.bootstrap4.js')}}"></script>
+  <script src="{{url_for('static', filename='/js/dataTables.select.min.js')}}"></script>
+
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="{{url_for('static', filename='js/off-canvas.js')}}"></script>
+  <script src="{{url_for('static', filename='js/hoverable-collapse.js')}}"></script>
+  <script src="{{url_for('static', filename='js/template.js')}}"></script>
+  <script src="{{url_for('static', filename='js/settings.js')}}"></script>
+  <script src="{{url_for('static', filename='js/todolist.js')}}"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="{{url_for('static', filename='js/dashboard.js')}}"></script>
+  <script src="{{url_for('static', filename='js/Chart.roundedBarCharts.js')}}"></script>
+  <!-- End custom js for this page-->
+  
+  <!-- Ajoutez le script JavaScript pour gérer la disparition du message -->
+  <script>
+    // Sélectionnez l'élément contenant le message flash
+    const flashMessage = document.getElementById('flash-message');
+    
+    // Définissez un délai (en millisecondes) avant que le message ne disparaisse
+    const delay = 5000; // 5 secondes
+    
+    // Utilisez setTimeout pour masquer le message après le délai
+    setTimeout(function() {
+        flashMessage.style.display = 'none';
+    }, delay);
+  </script>
+<script>
+  function submitForm(month) {
+      document.getElementById('month_value').value = month; // Set the month value
+      document.querySelector('form').submit(); // Submit the form
+  }
+</script>
+<script>
+  window.onload = function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const isSubmitted = urlParams.get('submitted');
+      if (isSubmitted === 'true' && document.getElementById('resultsSection')) {
+          document.getElementById('resultsSection').scrollIntoView();
+      }
+  };
+</script>
+
+<script>
+  function exportPDF() {
+      // Liste des éléments à capturer
+      const elementsIds = ['kpi', 'graph', 'tableau_prediction'];
+      let doc = new jspdf.jsPDF('p', 'pt', 'a4');  // 'p' pour portrait, 'pt' pour points, 'a4' pour le format du papier
+      let lastYPosition = 20; // Position de départ pour le premier élément
+  
+      elementsIds.forEach((id, index) => {
+          html2canvas(document.getElementById(id)).then(canvas => {
+              if (id === 'tableau_prediction' && index > 0) { // Ajouter une nouvelle page pour tableau_prediction
+                  doc.addPage();
+                  lastYPosition = 20; // Réinitialiser la position Y au début de la nouvelle page
+              }
+  
+              const imgData = canvas.toDataURL('image/png');
+              const scale = 0.5; // Ajustez l'échelle ici si nécessaire
+              const imgWidth = canvas.width * scale;
+              const imgHeight = canvas.height * scale;
+  
+              doc.addImage(imgData, 'PNG', 20, lastYPosition, imgWidth, imgHeight);
+  
+              lastYPosition += imgHeight + 10; // Ajouter un petit espace de 10pt entre les images, ajustez selon les besoins
+  
+              if (index === elementsIds.length - 1) {
+                  doc.save('rapport.pdf'); // Sauvegarder le PDF après la dernière capture
+              }
+          });
+      });
+  }
+</script>
+  
+  
+  
+  </body>
+</html>

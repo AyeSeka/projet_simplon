@@ -1,0 +1,143 @@
+{% extends "Partials/Base_dash.html" %}
+{% block body %}
+<div class="notif-div">
+    <h1>Mes Notifications</h1>
+    <div id="notifications-container">
+        <!-- Les notifications seront affichées ici -->
+    </div>
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.2.0/socket.io.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('connect', function () {
+            console.log('Connexion établie avec le serveur Socket.IO');
+            fetchUnreadNotifications(); // Appeler la fonction pour récupérer les notifications non lues
+        });
+
+        var personel_id = "100";
+        console.log(typeof personel_id);
+
+        // Tableau pour stocker les notifications
+        // var notifications = JSON.parse(localStorage.getItem('notifications')) || [];
+
+        socket.on('notification_personnel_eveil', function (message) {
+            alert('Nouvelle notification');
+            updateNotifications(message);
+        });
+
+        // Rejoindre la salle spécifique
+        socket.emit('join', { tutor_id: personel_id });
+
+        // Fonction pour mettre à jour la section des notifications
+        function updateNotifications(notificationData) {
+            //console.log('Mise à jour des notifications :', notificationData);
+
+            const notificationsContainer = document.getElementById('notifications-container');
+            // Utilisez la propriété 'notification' si elle existe, sinon utilisez 'notification_message'
+            const message = notificationData.notification_message;
+            const id_notification = parseInt(notificationData.id)
+
+            // Stocker les identifiants dans localStorage
+            localStorage.setItem('parent_id', notificationData.parent_id);
+            localStorage.setItem('repetiteur_id', notificationData.tutor_id);
+
+            // Créez un élément de notification et ajoutez-le à la liste
+            const notificationElement = document.createElement('div');
+            notificationElement.classList.add('notification-item');
+            notificationElement.innerHTML = `<p data-notification-id="${id_notification}>Message: ${message}</p>`;
+            //notificationElement.innerHTML = `<p data-notification-id="${notificationData.id}">Message: ${message}</p>`;
+
+
+            notificationElement.innerHTML = `
+        <p data-notification-id="${notificationData.id}">Message: ${notificationData.notification_message}</p>
+        <button class="confirm-btn" data-notification-id="${notificationData.id}" data-parent-id="${notificationData.parent_id}" data-repetiteur-id="${notificationData.tutor_id}">Confirmer</button>
+    `;
+
+            notificationsContainer.appendChild(notificationElement);
+
+            notificationsContainer.addEventListener('click', function (event) {
+                // confirm("Voulez-vous marquer la notification comme lue ??")
+                const notificationElement = event.target.closest('.notification-item');
+                if (notificationElement) {
+                    const notificationId = notificationElement.querySelector('p').getAttribute('data-notification-id');
+                    markNotificationAsRead(notificationId);
+                    notificationElement.classList.add('notification-item-read');
+                }
+            });
+
+
+            // Ajoutez un gestionnaire d'événements pour les boutons de confirmation après leur création
+            document.addEventListener('click', function (event) {
+                if (event.target.classList.contains('confirm-btn')) {
+                    const notificationId = event.target.getAttribute('data-notification-id');
+                    const parentId = localStorage.getItem('parent_id');
+                    const repetiteurId = localStorage.getItem('repetiteur_id');
+
+                    confirmNotification(notificationId, parentId, repetiteurId);
+
+                }
+            });
+
+        }
+
+
+        function confirmNotification(notificationId, parent_id, repetiteur_id) {
+            const parentId = localStorage.getItem('parent_id');
+            const repetiteurId = localStorage.getItem('repetiteur_id');
+
+            fetch(`/confirm_notification/${notificationId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    parent_id: parentId,
+                    repetiteur_id: repetiteurId
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Notification confirmée:', data);
+                })
+                .catch(error => console.error('Erreur lors de la requête au serveur:', error));
+        }
+
+
+        function markNotificationAsRead(notificationId) {
+            // Envoyez une requête au serveur pour marquer la notification comme lue
+            fetch(`/mark_notification_as_read/${notificationId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Notification marquée comme lue:', data);
+                    // Supprimez la notification du DOM si nécessaire
+                    // document.querySelector(`[data-notification-id="${notificationId}"]`).remove();
+                })
+                .catch(error => console.error('Erreur lors de la requête au serveur:', error));
+        }
+
+        // Fonction pour récupérer et afficher les notifications non lues
+        function fetchUnreadNotifications() {
+            fetch('/notifications_non_lues_personel')
+                .then(response => response.json())
+                .then(notifications => {
+                    notifications.forEach(notification => {
+                        const time = notification.notification ? notification.Times : 'Temps inconnu';
+                        const message = notification.notification_message ? notification : 'Message inconnu';
+                        console.log(`message!!: ${message}`)
+                        updateNotifications(message);
+                    });
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des notifications:', error);
+                });
+        }
+    });
+
+</script>
+{% endblock body %}

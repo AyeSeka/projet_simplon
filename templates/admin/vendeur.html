@@ -1,0 +1,42 @@
+{% extends "Partials/Base_dash.html" %}
+{% block body %}
+  <!-- partial -->
+  <div class="main-panel">
+      <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-title">Liste des vendeurs</p>
+              <div class="row">
+                <div class="col-12">
+                  <div class="table-responsive">
+                    <table id="example" class="display expandable-table" style="width:100%">
+                      <thead>
+                        <tr>
+                          <th>N°</th>
+                          <th>Nom & Prenom</th>
+                          <th>Email</th>
+                          <th>Date de Naissance</th>
+                          <th>Lieu d'habitation</th>
+                          <th>Actions</th>
+                        </tr>
+                        <tr>
+                          <td>1</td>
+                          <td>Candia Kamara</td>
+                          <td>mamil@mail.com</td>
+                          <td>08/12/2088</td>
+                          <td>Bongouanou</td>
+                          <td>
+                            <button type="button" class="btn btn-primary">Modifier</button>
+                            <button type="button" class="btn btn-info">Activer / Restreint</button>
+                            <button type="button" class="btn btn-danger">Supprimer</button>
+                          </td>
+                        </tr>
+                      </thead>
+                  </table>
+                  </div>
+                </div>
+              </div>
+
+      </div>
+{% endblock body %}  
