@@ -163,7 +163,7 @@ def connexion():
                 return redirect(url_for('index'))
             elif role == "Vendeur":
                 flash("Connexion réussie en tant que vendeur !", "success")
-                return redirect(url_for('index'))
+                return redirect(url_for('dash_vendeur'))
             else:
                 flash("Rôle non reconnu.", "danger")
                 return redirect(url_for('index'))
@@ -300,6 +300,7 @@ def prediction_produit():
 def vendeur():
     return render_template("admin/vendeur.html")
 
+
 #client
 @app.route("/client")
 @login_required
@@ -329,11 +330,96 @@ def delete_client(id_client):
 @app.route("/modifier_client/<int:id_client>")
 @login_required
 def modifier_client(id_client):
-    # Logique pour récupérer les informations du client
-    client_info = get_client_info(id_client)  # Supposons que cette fonction récupère les détails du client
-    return render_template("admin/modif_client.html", client=client_info)
+    cursor = conn.cursor()
+    try:
+        # Récupérer les informations du client
+        cursor.execute("SELECT NomClient, GenreClient, TelephoneClient FROM Client WHERE IdClient = ?", (id_client,))
+        client_info = cursor.fetchone()
+        if client_info:
+            # Pré-remplir le formulaire avec les informations du client
+            return render_template("admin/modif_client.html", client=client_info, client_id=id_client)
+        else:
+            flash("Client non trouvé.", "error")
+            return redirect(url_for('client'))
+    except Exception as e:
+        flash(f"Erreur lors de la récupération des données: {str(e)}", 'error')
+        return redirect(url_for('client'))
+    finally:
+        cursor.close()
+
+#update client
+@app.route("/update_client/<int:id_client>", methods=['POST'])
+@login_required
+def update_client(id_client):
+    # Récupération des données du formulaire
+    nom = request.form['nom']
+    genre = request.form['genre']
+    tel = request.form['tel']
+
+    # Connexion à la base de données
+    cursor = conn.cursor()
+    try:
+        # Mise à jour des informations du client
+        cursor.execute("""
+            UPDATE Client 
+            SET NomClient = ?, GenreClient = ?, TelephoneClient = ?
+            WHERE IdClient = ?
+        """, (nom, genre, tel, id_client))
+        conn.commit()
+        flash('Les informations du client ont été mises à jour avec succès.', 'success')
+    except Exception as e:
+        # Gérer les erreurs de mise à jour
+        conn.rollback()
+        flash(f'Erreur lors de la mise à jour des données: {str(e)}', 'error')
+    finally:
+        cursor.close()
+    
+    # Redirection vers la page de profil du client ou une autre page appropriée
+    return redirect(url_for('client', id_client=id_client))
 
 
+@app.route("/recherche_client", methods=['GET'])
+def recherche_client():
+    query = request.args.get('q', '').strip()  # Récupérer la chaîne de recherche et supprimer les espaces superflus
+    if query:
+        cursor = conn.cursor()
+        try:
+            # Exécuter une requête SQL pour rechercher les clients par nom
+            cursor.execute("SELECT * FROM Client WHERE NomClient LIKE ?", ('%' + query + '%',))
+            data = cursor.fetchall()
+            return render_template("admin/client.html", data=data, query=query)
+        except Exception as e:
+            flash(f"Erreur lors de la recherche: {str(e)}", 'error')
+            return redirect(url_for('client'))  # ou toute autre page appropriée
+        finally:
+            cursor.close()
+    else:
+        flash("Veuillez entrer un terme de recherche.", 'warning')
+        return redirect(url_for('client'))
+
+
+
+##########Dashbord_vendeur############
+@app.route("/dash_vendeur")
+@login_required
+def dash_vendeur():
+    user_id = session.get('user_id')
+    cursor = conn.cursor()
+    cursor.execute( "SELECT * FROM Vendeur WHERE IdUser = ?", user_id)
+    data = cursor.fetchall()
+    conn.commit()
+    return render_template("vendeur/dash_vendeur.html", user_id =user_id, data=data)
+
+
+
+
+
+
+
+
+
+
+##########Dashbord_gestionnaire############
 
 
 

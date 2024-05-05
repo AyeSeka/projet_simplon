@@ -7,6 +7,15 @@
             <div class="card">
                 <div class="card-body">
                     <p class="card-title">Liste des clients</p>
+                    <!-- Barre de recherche -->
+                    <form action="/recherche_client" method="GET" class="mb-4">
+                        <div class="input-group" style="max-width: 500px; margin-left: 20px;"> <!-- Ajustez la marge gauche si nécessaire -->
+                            <input type="text" class="form-control" placeholder="Rechercher un client..." name="q">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                            </div>
+                        </div>                                      
+                    </form>
                     <div class="row">
                         <div class="col-12">
                             <div class="table-responsive" style="height: 500px;overflow-y: scroll;">
