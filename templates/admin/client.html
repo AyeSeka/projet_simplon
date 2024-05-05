@@ -1,51 +1,78 @@
 {% extends "Partials/Base_dash.html" %}
 {% block body %}
-  <!-- partial -->
-  <div class="main-panel">
-      <div class="row">
+<!-- partial -->
+<div class="main-panel">
+    <div class="row">
         <div class="col-md-12 grid-margin stretch-card">
-          <div class="card">
-            <div class="card-body">
-              <p class="card-title">Liste des clients</p>
-              <div class="row">
-                <div class="col-12">
-                  <div class="table-responsive" style="height: 500px;overflow-y: scroll;">
-                    <table id="example" class="display expandable-table" style="width:100%">
-                      <thead>
-                        <tr>
-                          <th>N°</th>
-                          <th>Nom & Prenom</th>
-                          <th>Genre</th>
-                          <th>Numéro de telephone</th>
-                          <th>Actions</th>
-                        </tr>
-                        {% for item in data %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td>{{ item.NomClient }}</td>
-                            <td>{{ item.GenreClient }}</td>
-                            <td>{{ item.TelephoneClient}}</td>
-                            <td>
-                                <button type="button" class="btn btn-primary">Modifier</button>
-                                <button type="button" class="btn btn-danger">Supprimer</button>
-                              </td>
-                        </tr>
-                        {% endfor %}
-                        <!-- <tr>
-                          <td>1</td>
-                          <td>Candia Kamara</td>
-                          <td>female</td>
-                          <td>01010010100</td>
-                          <td>
-                            <button type="button" class="btn btn-primary">Modifier</button>
-                            <button type="button" class="btn btn-danger">Supprimer</button>
-                          </td>
-                        </tr> -->
-                      </thead>
-                  </table>
-                  </div>
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Liste des clients</p>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive" style="height: 500px;overflow-y: scroll;">
+                                <table id="example" class="display expandable-table" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>N°</th>
+                                            <th>Nom & Prenom</th>
+                                            <th>Genre</th>
+                                            <th>Numéro de telephone</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in data %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ item.NomClient }}</td>
+                                            <td>{{ item.GenreClient }}</td>
+                                            <td>{{ item.TelephoneClient }}</td>
+                                            <td>
+                                                <a href="/modifier_client/{{ item.IdClient }}" class="btn btn-primary">Modifier</a>
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal" data-id="{{ item.IdClient }}">Supprimer</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
-
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmation de suppression</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir supprimer ce client ?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+              <form method="POST" action="" id="deleteForm">
+                  <input type="hidden" name="id_client" id="form-client-id">
+                  <button type="submit" class="btn btn-danger">Supprimer</button>
+              </form>
+          </div>
       </div>
-{% endblock body %}  
+  </div>
+</div>
+<script>
+$('#confirmDeleteModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);  // Bouton qui a déclenché le modal
+    var idClient = button.data('id'); // Extraction de l'attribut data-id
+    var modal = $(this);
+    modal.find('#form-client-id').val(idClient);  // Affecter l'ID au champ caché du formulaire
+    modal.find('#deleteForm').attr('action', '/delete-client/' + idClient);  // Mettre à jour l'action du formulaire pour soumettre à la bonne route
+});
+</script>
+{% endblock body %}

@@ -308,7 +308,32 @@ def client():
     cursor.execute( "SELECT * FROM Client ")
     data = cursor.fetchall()
     return render_template("admin/client.html", data=data)
-   
+
+#suppression client
+@app.route("/delete-client/<int:id_client>", methods=['POST'])
+@login_required
+def delete_client(id_client):
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM Client WHERE IdClient = ?", (id_client,))
+        conn.commit()
+        flash('Client supprimé avec succès!', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash(f'Erreur lors de la suppression du client: {str(e)}', 'error')  # Affichage plus détaillé de l'erreur
+    finally:
+        cursor.close()
+    return redirect(url_for('client'))
+
+#modifier client
+@app.route("/modifier_client/<int:id_client>")
+@login_required
+def modifier_client(id_client):
+    # Logique pour récupérer les informations du client
+    client_info = get_client_info(id_client)  # Supposons que cette fonction récupère les détails du client
+    return render_template("admin/modif_client.html", client=client_info)
+
+
 
 
 
