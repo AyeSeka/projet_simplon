@@ -298,7 +298,106 @@ def prediction_produit():
 @app.route("/vendeur")
 @login_required
 def vendeur():
-    return render_template("admin/vendeur.html")
+    cursor = conn.cursor()
+    cursor.execute( "SELECT * FROM Vendeur ")
+    data = cursor.fetchall()
+    return render_template("admin/vendeur.html", data=data)
+
+#suppression vendeur
+@app.route("/delete-vendeur/<int:id_vendeur>", methods=['POST'])
+@login_required
+def delete_vendeur(id_vendeur):
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM Vendeur WHERE IdVendeur = ?", (id_vendeur,))
+        conn.commit()
+        flash('Vendeur supprimé avec succès!', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash(f'Erreur lors de la suppression du vendeur: {str(e)}', 'error')  # Affichage plus détaillé de l'erreur
+    finally:
+        cursor.close()
+    return redirect(url_for('vendeur'))
+
+
+#modifier vendeur
+@app.route("/modifier_vendeur/<int:id_vendeur>")
+@login_required
+def modifier_vendeur(id_vendeur):
+    cursor = conn.cursor()
+    try:
+        # Récupérer les informations du client
+        cursor.execute("SELECT NomVendeur, PrenomVendeur, DateNaissance, lieu_hab_rep FROM Vendeur WHERE IdVendeur = ?", (id_vendeur,))
+        vendeur_info = cursor.fetchone()
+        if vendeur_info:
+            # Pré-remplir le formulaire avec les informations du client
+            return render_template("admin/modif_vendeur.html", vendeur=vendeur_info, vendeur_id=id_vendeur)
+        else:
+            flash("Vendeur non trouvé.", "error")
+            return redirect(url_for('vendeur'))
+    except Exception as e:
+        flash(f"Erreur lors de la récupération des données: {str(e)}", 'error')
+        return redirect(url_for('vendeur'))
+    finally:
+        cursor.close()
+
+
+#update vendeur
+@app.route("/update_vendeur/<int:id_vendeur>", methods=['POST'])
+@login_required
+def update_vendeur(id_vendeur):
+    # Récupération des données du formulaire
+    nom = request.form['nom']
+    prenom = request.form['prenom']
+    date_naissance = request.form['date_naissance']
+    lieu_habitation = request.form['lieu_habitation']
+
+    # Connexion à la base de données
+    cursor = conn.cursor()
+    try:
+        # Mise à jour des informations du vendeur
+        cursor.execute("""
+            UPDATE Vendeur 
+            SET NomVendeur = ?, PrenomVendeur = ?,DateNaissance = ? ,lieu_hab_rep = ?
+            WHERE IdVendeur = ?
+        """, (nom, prenom, date_naissance,lieu_habitation, id_vendeur))
+        conn.commit()
+        flash('Les informations du vendeur ont été mises à jour avec succès.', 'success')
+    except Exception as e:
+        # Gérer les erreurs de mise à jour
+        conn.rollback()
+        flash(f'Erreur lors de la mise à jour des données: {str(e)}', 'error')
+    finally:
+        cursor.close()
+    
+    # Redirection vers la page de profil du vendeur ou une autre page appropriée
+    return redirect(url_for('vendeur', id_vendeur=id_vendeur))
+
+@app.route("/recherche_vendeur", methods=['GET'])
+def recherche_vendeur():
+    query = request.args.get('q', '').strip()  # Récupérer la chaîne de recherche et supprimer les espaces superflus
+    if query:
+        cursor = conn.cursor()
+        try:
+            # Exécuter une requête SQL pour rechercher les vendeurs par nom
+            cursor.execute("SELECT * FROM Vendeur WHERE NomVendeur LIKE ?", ('%' + query + '%',))
+            data = cursor.fetchall()
+            return render_template("admin/vendeur.html", data=data, query=query)
+        except Exception as e:
+            flash(f"Erreur lors de la recherche: {str(e)}", 'error')
+            return redirect(url_for('vendeur'))  # ou toute autre page appropriée
+        finally:
+            cursor.close()
+    else:
+        flash("Veuillez entrer un terme de recherche.", 'warning')
+        return redirect(url_for('vendeur'))
+
+
+
+
+
+
+
 
 
 #client

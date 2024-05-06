@@ -38,20 +38,32 @@
               <div class="brand-logo">
                 <img src="{{url_for('static', filename='/images/logo.svg')}}" alt="logo">
               </div>
-              <h4>Modification des informations du client</h4>
-              <form class="pt-3" action="{{ url_for('update_client', id_client=client_id) }}" method="POST">                
+              <h4>Modification des informations du vendeur</h4>
+              <form class="pt-3" action="{{ url_for('update_vendeur', id_vendeur=vendeur_id) }}" method="POST">
                 <div class="form-group">
                   <input type="text" class="form-control form-control-lg" name="nom" placeholder="Nom" required value="{{ vendeur[0] }}">
                 </div>
                 <div class="form-group">
-                  <input type="text" class="form-control form-control-lg" name="prenom" placeholder="prénom" required value="{{ vendeur[1] }}">
+                    <input type="text" class="form-control form-control-lg" name="prenom" placeholder="Prenom" required value="{{ vendeur[1] }}">
+                  </div>
+                <div class="form-group">
+                  <input type="Date" class="form-control form-control-lg" name="date_naissance" placeholder="Date de naissance" required value="{{ vendeur[2] }}">
                 </div>
                 <div class="form-group">
-                  <input type="date" class="form-control form-control-lg" name="date_naissance" placeholder="Date de Naissance" required value="{{ vendeur[2] }}">
-                </div>
-                <div class="form-group">
-                  <input type="text" class="form-control form-control-lg" name="lieu_habitation" placeholder="Lieu d'habitation" required value="{{ vendeur[3] }}">
-                </div>
+                    <select class="form-control form-control-lg" name="lieu_habitation" required>
+                        <option value="">Sélectionnez votre commune</option>
+                        <option value="Abobo" {% if vendeur[2] == "Abobo" %}selected{% endif %}>Abobo</option>
+                        <option value="Adjamé" {% if vendeur[2] == "Adjamé" %}selected{% endif %}>Adjamé</option>
+                        <option value="Attécoubé" {% if vendeur[2] == "Attécoubé" %}selected{% endif %}>Attécoubé</option>
+                        <option value="Cocody" {% if vendeur[2] == "Cocody" %}selected{% endif %}>Cocody</option>
+                        <option value="Koumassi" {% if vendeur[2] == "Koumassi" %}selected{% endif %}>Koumassi</option>
+                        <option value="Marcory" {% if vendeur[2] == "Marcory" %}selected{% endif %}>Marcory</option>
+                        <option value="Plateau" {% if vendeur[2] == "Plateau" %}selected{% endif %}>Plateau</option>
+                        <option value="Port-Bouët" {% if vendeur[2] == "Port-Bouët" %}selected{% endif %}>Port-Bouët</option>
+                        <option value="Treichville" {% if vendeur[2] == "Treichville" %}selected{% endif %}>Treichville</option>
+                        <option value="Yopougon" {% if vendeur[2] == "Yopougon" %}selected{% endif %}>Yopougon</option>
+                    </select>
+                </div>                
                 <div class="form-group">
                   <button type="button" class="btn btn-block btn-danger btn-lg font-weight-medium auth-form-btn" onclick="history.back();">Retour</button>
                   <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Valider</button>
