@@ -160,7 +160,7 @@ def connexion():
                 return redirect(url_for('dash'))
             elif role == "Gestionnaire":
                 flash("Connexion réussie en tant que gestionnaire !", "success")
-                return redirect(url_for('index'))
+                return redirect(url_for('dash_gestionnaire'))
             elif role == "Vendeur":
                 flash("Connexion réussie en tant que vendeur !", "success")
                 return redirect(url_for('dash_vendeur'))
@@ -393,13 +393,6 @@ def recherche_vendeur():
         return redirect(url_for('vendeur'))
 
 
-
-
-
-
-
-
-
 #client
 @app.route("/client")
 @login_required
@@ -519,6 +512,20 @@ def dash_vendeur():
 
 
 ##########Dashbord_gestionnaire############
+@app.route("/dash_gestionnaire")
+@login_required
+def dash_gestionnaire():
+    user_id = session.get('user_id')
+    cursor = conn.cursor()
+    cursor.execute( "SELECT * FROM Gestionnaire WHERE IdUser = ?", user_id)
+    data = cursor.fetchall()
+    conn.commit()
+    return render_template("gestionnaire/dash_gestionnaire.html", user_id =user_id, data=data)
+
+
+
+
+
 
 
 
