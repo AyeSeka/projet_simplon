@@ -1,0 +1,89 @@
+{% extends "Partials/Base_dash.html" %}
+{% block body %}
+<!-- partial -->
+<div class="main-panel">
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <p class="card-title">Liste des gestionnaires</p>
+                    <!-- Barre de recherche -->
+                    <form action="/recherche_gestionnaire" method="GET" class="mb-4">
+                        <div class="input-group" style="max-width: 500px; margin-left: 20px;"> <!-- Ajustez la marge gauche si nécessaire -->
+                            <input type="text" class="form-control" placeholder="Rechercher un gestionnaire..." name="q">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                            </div>
+                        </div>                                      
+                    </form>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-responsive" style="height: 500px;overflow-y: scroll;">
+                                <table id="example" class="display expandable-table" style="width:100%">
+                                    <thead>
+                                        <tr>
+                                            <th>N°</th>
+                                            <th>Nom & Prenom</th>
+                                            <th>Prenom</th>
+                                            <th>Date de Naissance</th>
+                                            <th>Lieu d'habitation</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for item in data %}
+                                        <tr>
+                                            <td>{{ loop.index }}</td>
+                                            <td>{{ item.NomGestionnaire }}</td>
+                                            <td>{{ item.PrenomGestionnaire }}</td>
+                                            <td>{{ item.DateNaissance}}</td>
+                                            <td>{{ item.lieu_hab_rep}}</td>
+                                            <td>
+                                                <a href="/modifier_gestionnaire/{{ item.IdGestionnaire }}" class="btn btn-primary">Modifier</a>
+                                                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmDeleteModal" data-id="{{ item.IdGestionnaire }}">Supprimer</button>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmation de suppression</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+            Êtes-vous sûr de vouloir supprimer ce gestionnaire ?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+              <form method="POST" action="" id="deleteForm">
+                  <input type="hidden" name="id_gestionnaire" id="form-gestionnaire-id">
+                  <button type="submit" class="btn btn-danger">Supprimer</button>
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+<script>
+$('#confirmDeleteModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);  // Bouton qui a déclenché le modal
+    var idGestionnaire = button.data('id'); // Extraction de l'attribut data-id
+    var modal = $(this);
+    modal.find('#form-gestionnaire-id').val(idGestionnaire);  // Affecter l'ID au champ caché du formulaire
+    modal.find('#deleteForm').attr('action', '/delete-gestionnaire/' + idGestionnaire);  // Mettre à jour l'action du formulaire pour soumettre à la bonne route
+});
+</script>
+{% endblock body %}

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Skydash</title>
+
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="{{url_for('static', filename='/vendors/feather/feather.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='/vendors/ti-icons/css/themify-icons.css')}}">
+  <link rel="stylesheet" href="{{url_for('static', filename='/vendors/css/vendor.bundle.base.css')}}">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="{{url_for('static', filename='/css/vertical-layout-light/style.css')}}">
+  <!-- endinject -->
+  <link rel="stylesheet" href="{{url_for('static', filename='/images/conception-modele-logo-supermarche_23-2148467149.avif')}}">
+
+</head>
+
+<body>
+  <div class="container-scroller">
+    <div class="container-fluid page-body-wrapper full-page-wrapper">
+      <div class="content-wrapper d-flex align-items-center auth px-0">
+        <div class="row w-100 mx-0">
+          <div class="col-lg-4 mx-auto">
+            <div class="auth-form-light text-left py-5 px-4 px-sm-5">
+              {% with messages=get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{category}}" id="flash-message"> {{message}} </div>
+                    {%endfor%}
+                {%endif%}
+              {% endwith %}
+              <div class="brand-logo">
+                <img src="{{url_for('static', filename='/images/logo.svg')}}" alt="logo">
+              </div>
+              <h4>Modification des informations du gestionnaire</h4>
+              <form class="pt-3" action="{{ url_for('update_gestionnaire', id_gestionnaire=gestionnaire_id) }}" method="POST">
+                <div class="form-group">
+                  <input type="text" class="form-control form-control-lg" name="nom" placeholder="Nom" required value="{{ gestionnaire[0] }}">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control form-control-lg" name="prenom" placeholder="Prenom" required value="{{ gestionnaire[1] }}">
+                  </div>
+                <div class="form-group">
+                  <input type="Date" class="form-control form-control-lg" name="date_naissance" placeholder="Date de naissance" required value="{{ gestionnaire[2] }}">
+                </div>
+                <div class="form-group">
+                    <select class="form-control form-control-lg" name="lieu_habitation" required>
+                        <option value="">Sélectionnez votre commune</option>
+                        <option value="Abobo" {% if gestionnaire[2] == "Abobo" %}selected{% endif %}>Abobo</option>
+                        <option value="Adjamé" {% if gestionnaire[2] == "Adjamé" %}selected{% endif %}>Adjamé</option>
+                        <option value="Attécoubé" {% if gestionnaire[2] == "Attécoubé" %}selected{% endif %}>Attécoubé</option>
+                        <option value="Cocody" {% if gestionnaire[2] == "Cocody" %}selected{% endif %}>Cocody</option>
+                        <option value="Koumassi" {% if gestionnaire[2] == "Koumassi" %}selected{% endif %}>Koumassi</option>
+                        <option value="Marcory" {% if gestionnaire[2] == "Marcory" %}selected{% endif %}>Marcory</option>
+                        <option value="Plateau" {% if gestionnaire[2] == "Plateau" %}selected{% endif %}>Plateau</option>
+                        <option value="Port-Bouët" {% if gestionnaire[2] == "Port-Bouët" %}selected{% endif %}>Port-Bouët</option>
+                        <option value="Treichville" {% if gestionnaire[2] == "Treichville" %}selected{% endif %}>Treichville</option>
+                        <option value="Yopougon" {% if gestionnaire[2] == "Yopougon" %}selected{% endif %}>Yopougon</option>
+                    </select>
+                </div>                
+                <div class="form-group">
+                  <button type="button" class="btn btn-block btn-danger btn-lg font-weight-medium auth-form-btn" onclick="history.back();">Retour</button>
+                  <button type="submit" class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">Valider</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- content-wrapper ends -->
+    </div>
+    <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="../../vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="../../js/off-canvas.js"></script>
+  <script src="../../js/hoverable-collapse.js"></script>
+  <script src="../../js/template.js"></script>
+  <script src="../../js/settings.js"></script>
+  <script src="../../js/todolist.js"></script>
+  <!-- endinject -->
+  <!-- Ajoutez le script JavaScript pour gérer la disparition du message -->
+<script>
+  // Sélectionnez l'élément contenant le message flash
+  const flashMessage = document.getElementById('flash-message');
+  
+  // Définissez un délai (en millisecondes) avant que le message ne disparaisse
+  const delay = 5000; // 5 secondes
+  
+  // Utilisez setTimeout pour masquer le message après le délai
+  setTimeout(function() {
+      flashMessage.style.display = 'none';
+  }, delay);
+</script>
+
+<!-- <script>
+  // Vérifier si le navigateur prend en charge le stockage local
+  if (typeof(Storage) !== "undefined") {
+      // Après le chargement de la page, vérifier si le formulaire a été soumis avec succès
+      window.addEventListener('load', function() {
+          var flashMessages = document.querySelectorAll('.alert');
+          // Si aucun message flash de succès n'est présent, préremplir les champs avec les valeurs du cache local
+          if (!flashMessages.length || !flashMessages[0].classList.contains('alert-success')) {
+              document.querySelectorAll('input, select').forEach(function(element) {
+                  if (localStorage.getItem(element.name)) {
+                      element.value = localStorage.getItem(element.name);
+                  }
+                  // Sur l'événement de saisie, mettre à jour la valeur dans le cache local
+                  element.addEventListener('input', function() {
+                      localStorage.setItem(element.name, element.value);
+                  });
+              });
+          }
+      });
+  }
+</script> -->
+
+</body>
+
+</html>
+

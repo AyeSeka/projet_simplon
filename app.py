@@ -189,10 +189,24 @@ def deconnexion():
 def dash():
     user_id = session.get('user_id')
     cursor = conn.cursor()
-    cursor.execute( "SELECT * FROM Admin WHERE IdUser = ?", user_id)
+
+    # Requête pour obtenir les informations de l'admin
+    cursor.execute("SELECT * FROM Admin WHERE IdUser = ?", (user_id,))
     data = cursor.fetchall()
+
+    # Requête pour compter le nombre de gestionnaires
+    cursor.execute("SELECT COUNT(*) FROM Gestionnaire")
+    gestionnaire_count = cursor.fetchone()[0]
+
+    # Requête pour compter le nombre de vendeurs
+    cursor.execute("SELECT COUNT(*) FROM Vendeur")
+    vendeur_count = cursor.fetchone()[0]
+
     conn.commit()
-    return render_template("admin/dash.html", user_id =user_id, data=data)
+    cursor.close()
+
+    return render_template("admin/dash.html", user_id=user_id, data=data, gestionnaire_count=gestionnaire_count, vendeur_count=vendeur_count)
+
 
 
 #Deployement_model#
@@ -294,6 +308,103 @@ def prediction_produit():
             return render_template("admin/dash.html")
 
 
+#client
+@app.route("/client")
+@login_required
+def client():
+    cursor = conn.cursor()
+    cursor.execute( "SELECT * FROM Client ")
+    data = cursor.fetchall()
+    return render_template("admin/client.html", data=data)
+
+#suppression client
+@app.route("/delete-client/<int:id_client>", methods=['POST'])
+@login_required
+def delete_client(id_client):
+    cursor = conn.cursor()
+    try:
+        cursor.execute("DELETE FROM Client WHERE IdClient = ?", (id_client,))
+        conn.commit()
+        flash('Client supprimé avec succès!', 'success')
+    except Exception as e:
+        conn.rollback()
+        flash(f'Erreur lors de la suppression du client: {str(e)}', 'error')  # Affichage plus détaillé de l'erreur
+    finally:
+        cursor.close()
+    return redirect(url_for('client'))
+
+#modifier client
+@app.route("/modifier_client/<int:id_client>")
+@login_required
+def modifier_client(id_client):
+    cursor = conn.cursor()
+    try:
+        # Récupérer les informations du client
+        cursor.execute("SELECT NomClient, GenreClient, TelephoneClient FROM Client WHERE IdClient = ?", (id_client,))
+        client_info = cursor.fetchone()
+        if client_info:
+            # Pré-remplir le formulaire avec les informations du client
+            return render_template("admin/modif_client.html", client=client_info, client_id=id_client)
+        else:
+            flash("Client non trouvé.", "error")
+            return redirect(url_for('client'))
+    except Exception as e:
+        flash(f"Erreur lors de la récupération des données: {str(e)}", 'error')
+        return redirect(url_for('client'))
+    finally:
+        cursor.close()
+
+#update client
+@app.route("/update_client/<int:id_client>", methods=['POST'])
+@login_required
+def update_client(id_client):
+    # Récupération des données du formulaire
+    nom = request.form['nom']
+    genre = request.form['genre']
+    tel = request.form['tel']
+
+    # Connexion à la base de données
+    cursor = conn.cursor()
+    try:
+        # Mise à jour des informations du client
+        cursor.execute("""
+            UPDATE Client 
+            SET NomClient = ?, GenreClient = ?, TelephoneClient = ?
+            WHERE IdClient = ?
+        """, (nom, genre, tel, id_client))
+        conn.commit()
+        flash('Les informations du client ont été mises à jour avec succès.', 'success')
+    except Exception as e:
+        # Gérer les erreurs de mise à jour
+        conn.rollback()
+        flash(f'Erreur lors de la mise à jour des données: {str(e)}', 'error')
+    finally:
+        cursor.close()
+    
+    # Redirection vers la page de profil du client ou une autre page appropriée
+    return redirect(url_for('client', id_client=id_client))
+
+
+@app.route("/recherche_client", methods=['GET'])
+def recherche_client():
+    query = request.args.get('q', '').strip()  # Récupérer la chaîne de recherche et supprimer les espaces superflus
+    if query:
+        cursor = conn.cursor()
+        try:
+            # Exécuter une requête SQL pour rechercher les clients par nom
+            cursor.execute("SELECT * FROM Client WHERE NomClient LIKE ?", ('%' + query + '%',))
+            data = cursor.fetchall()
+            return render_template("admin/client.html", data=data, query=query)
+        except Exception as e:
+            flash(f"Erreur lors de la recherche: {str(e)}", 'error')
+            return redirect(url_for('client'))  # ou toute autre page appropriée
+        finally:
+            cursor.close()
+    else:
+        flash("Veuillez entrer un terme de recherche.", 'warning')
+        return redirect(url_for('client'))
+
+
 #vendeur
 @app.route("/vendeur")
 @login_required
@@ -392,73 +503,74 @@ def recherche_vendeur():
         flash("Veuillez entrer un terme de recherche.", 'warning')
         return redirect(url_for('vendeur'))
 
-
-#client
-@app.route("/client")
+@app.route("/gestionnaire")
 @login_required
-def client():
+def gestionnaire():
     cursor = conn.cursor()
-    cursor.execute( "SELECT * FROM Client ")
+    cursor.execute("SELECT * FROM Gestionnaire")
     data = cursor.fetchall()
-    return render_template("admin/client.html", data=data)
+    number_of_gestionnaires = len(data)  # Calculer le nombre de gestionnaires
+    return render_template("admin/gestionnaire.html", data=data, count=number_of_gestionnaires)
 
-#suppression client
-@app.route("/delete-client/<int:id_client>", methods=['POST'])
+
+#suppression gestionnaire
+@app.route("/delete-gestionnaire/<int:id_gestionnaire>", methods=['POST'])
 @login_required
-def delete_client(id_client):
+def delete_gestionnaire(id_gestionnaire):
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM Client WHERE IdClient = ?", (id_client,))
+        cursor.execute("DELETE FROM Gestionnaire WHERE IdGestionnaire = ?", (id_gestionnaire,))
         conn.commit()
-        flash('Client supprimé avec succès!', 'success')
+        flash('Gestionnaire supprimé avec succès!', 'success')
     except Exception as e:
         conn.rollback()
-        flash(f'Erreur lors de la suppression du client: {str(e)}', 'error')  # Affichage plus détaillé de l'erreur
+        flash(f'Erreur lors de la suppression du gestionnaire: {str(e)}', 'error')  # Affichage plus détaillé de l'erreur
     finally:
         cursor.close()
-    return redirect(url_for('client'))
+    return redirect(url_for('gestionnaire'))
 
-#modifier client
-@app.route("/modifier_client/<int:id_client>")
+#modifier gestionnaire
+@app.route("/modifier_gestionnaire/<int:id_gestionnaire>")
 @login_required
-def modifier_client(id_client):
+def modifier_gestionnaire(id_gestionnaire):
     cursor = conn.cursor()
     try:
-        # Récupérer les informations du client
-        cursor.execute("SELECT NomClient, GenreClient, TelephoneClient FROM Client WHERE IdClient = ?", (id_client,))
-        client_info = cursor.fetchone()
-        if client_info:
-            # Pré-remplir le formulaire avec les informations du client
-            return render_template("admin/modif_client.html", client=client_info, client_id=id_client)
+        # Récupérer les informations du gestionnaire
+        cursor.execute("SELECT NomGestionnaire, PrenomGestionnaire, DateNaissance, lieu_hab_rep FROM Gestionnaire WHERE IdGestionnaire = ?", (id_gestionnaire,))
+        gestionnaire_info = cursor.fetchone()
+        if gestionnaire_info:
+            # Pré-remplir le formulaire avec les informations du gestionnaire
+            return render_template("admin/modif_gestionnaire.html", gestionnaire=gestionnaire_info, gestionnaire_id=id_gestionnaire)
         else:
-            flash("Client non trouvé.", "error")
-            return redirect(url_for('client'))
+            flash("Gestionnaire non trouvé.", "error")
+            return redirect(url_for('gestionnaire'))
     except Exception as e:
         flash(f"Erreur lors de la récupération des données: {str(e)}", 'error')
-        return redirect(url_for('client'))
+        return redirect(url_for('gestionnaire'))
     finally:
         cursor.close()
 
-#update client
-@app.route("/update_client/<int:id_client>", methods=['POST'])
+#update gestionnaire
+@app.route("/update_gestionnaire/<int:id_gestionnaire>", methods=['POST'])
 @login_required
-def update_client(id_client):
+def update_gestionnaire(id_gestionnaire):
     # Récupération des données du formulaire
     nom = request.form['nom']
-    genre = request.form['genre']
-    tel = request.form['tel']
+    prenom = request.form['prenom']
+    date_naissance = request.form['date_naissance']
+    lieu_habitation = request.form['lieu_habitation']
 
     # Connexion à la base de données
     cursor = conn.cursor()
     try:
-        # Mise à jour des informations du client
+        # Mise à jour des informations du gestionnaire
         cursor.execute("""
-            UPDATE Client 
-            SET NomClient = ?, GenreClient = ?, TelephoneClient = ?
-            WHERE IdClient = ?
-        """, (nom, genre, tel, id_client))
+            UPDATE Gestionnaire 
+            SET NomGestionnaire = ?, PrenomGestionnaire = ?,DateNaissance = ? ,lieu_hab_rep = ?
+            WHERE IdGestionnaire = ?
+        """, (nom, prenom, date_naissance,lieu_habitation, id_gestionnaire))
         conn.commit()
-        flash('Les informations du client ont été mises à jour avec succès.', 'success')
+        flash('Les informations du gestionnaire ont été mises à jour avec succès.', 'success')
     except Exception as e:
         # Gérer les erreurs de mise à jour
         conn.rollback()
@@ -466,28 +578,35 @@ def update_client(id_client):
     finally:
         cursor.close()
     
-    # Redirection vers la page de profil du client ou une autre page appropriée
-    return redirect(url_for('client', id_client=id_client))
+    # Redirection vers la page de profil du gestionnaire ou une autre page appropriée
+    return redirect(url_for('gestionnaire', id_gestionnaire=id_gestionnaire))
 
-
-@app.route("/recherche_client", methods=['GET'])
-def recherche_client():
+@app.route("/recherche_gestionnaire", methods=['GET'])
+def recherche_gestionnaire():
     query = request.args.get('q', '').strip()  # Récupérer la chaîne de recherche et supprimer les espaces superflus
     if query:
         cursor = conn.cursor()
         try:
-            # Exécuter une requête SQL pour rechercher les clients par nom
-            cursor.execute("SELECT * FROM Client WHERE NomClient LIKE ?", ('%' + query + '%',))
+            # Exécuter une requête SQL pour rechercher les gestionnaires par nom
+            cursor.execute("SELECT * FROM Gestionnaire WHERE NomGestionnaire LIKE ?", ('%' + query + '%',))
             data = cursor.fetchall()
-            return render_template("admin/client.html", data=data, query=query)
+            return render_template("admin/gestionnaire.html", data=data, query=query)
         except Exception as e:
             flash(f"Erreur lors de la recherche: {str(e)}", 'error')
-            return redirect(url_for('client'))  # ou toute autre page appropriée
+            return redirect(url_for('gestionnaire'))  # ou toute autre page appropriée
         finally:
             cursor.close()
     else:
         flash("Veuillez entrer un terme de recherche.", 'warning')
-        return redirect(url_for('client'))
+        return redirect(url_for('gestionnaire'))
+
+
+
+
+
+
+
+
 
 
 
