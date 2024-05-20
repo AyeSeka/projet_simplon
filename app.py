@@ -202,10 +202,14 @@ def dash():
     cursor.execute("SELECT COUNT(*) FROM Vendeur")
     vendeur_count = cursor.fetchone()[0]
 
+    # Requête pour obtenir le rôle de l'utilisateur
+    cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+    role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+
     conn.commit()
     cursor.close()
 
-    return render_template("admin/dash.html", user_id=user_id, data=data, gestionnaire_count=gestionnaire_count, vendeur_count=vendeur_count)
+    return render_template("admin/dash.html", user_id=user_id,  user_role=role ,data=data, gestionnaire_count=gestionnaire_count, vendeur_count=vendeur_count)
 
 
 
@@ -312,10 +316,20 @@ def prediction_produit():
 @app.route("/client")
 @login_required
 def client():
+    user_id = session.get('user_id')
     cursor = conn.cursor()
     cursor.execute( "SELECT * FROM Client ")
     data = cursor.fetchall()
-    return render_template("admin/client.html", data=data)
+
+    # Requête pour obtenir le rôle de l'utilisateur
+    cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+    role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+
+    conn.commit()
+    cursor.close()
+    return render_template("admin/client.html",user_role=role,data=data)
+
+
 
 #suppression client
 @app.route("/delete-client/<int:id_client>", methods=['POST'])
@@ -392,9 +406,15 @@ def recherche_client():
         cursor = conn.cursor()
         try:
             # Exécuter une requête SQL pour rechercher les clients par nom
+            user_id = session.get('user_id')
             cursor.execute("SELECT * FROM Client WHERE NomClient LIKE ?", ('%' + query + '%',))
             data = cursor.fetchall()
-            return render_template("admin/client.html", data=data, query=query)
+
+            # Requête pour obtenir le rôle de l'utilisateur
+            cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+            role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+
+            return render_template("admin/client.html",user_role=role ,data=data, query=query)
         except Exception as e:
             flash(f"Erreur lors de la recherche: {str(e)}", 'error')
             return redirect(url_for('client'))  # ou toute autre page appropriée
@@ -409,10 +429,18 @@ def recherche_client():
 @app.route("/vendeur")
 @login_required
 def vendeur():
+    user_id = session.get('user_id')
     cursor = conn.cursor()
     cursor.execute( "SELECT * FROM Vendeur ")
     data = cursor.fetchall()
-    return render_template("admin/vendeur.html", data=data)
+
+    # Requête pour obtenir le rôle de l'utilisateur
+    cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+    role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+
+    conn.commit()
+    cursor.close()
+    return render_template("admin/vendeur.html",user_role=role,data=data)
 
 #suppression vendeur
 @app.route("/delete-vendeur/<int:id_vendeur>", methods=['POST'])
@@ -452,7 +480,6 @@ def modifier_vendeur(id_vendeur):
     finally:
         cursor.close()
 
-
 #update vendeur
 @app.route("/update_vendeur/<int:id_vendeur>", methods=['POST'])
 @login_required
@@ -491,9 +518,15 @@ def recherche_vendeur():
         cursor = conn.cursor()
         try:
             # Exécuter une requête SQL pour rechercher les vendeurs par nom
+            user_id = session.get('user_id')
             cursor.execute("SELECT * FROM Vendeur WHERE NomVendeur LIKE ?", ('%' + query + '%',))
             data = cursor.fetchall()
-            return render_template("admin/vendeur.html", data=data, query=query)
+ 
+            # Requête pour obtenir le rôle de l'utilisateur
+            cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+            role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+
+            return render_template("admin/vendeur.html",user_role=role, data=data, query=query)
         except Exception as e:
             flash(f"Erreur lors de la recherche: {str(e)}", 'error')
             return redirect(url_for('vendeur'))  # ou toute autre page appropriée
@@ -503,15 +536,24 @@ def recherche_vendeur():
         flash("Veuillez entrer un terme de recherche.", 'warning')
         return redirect(url_for('vendeur'))
 
+
+
+#gestionnaire
 @app.route("/gestionnaire")
 @login_required
 def gestionnaire():
+    user_id = session.get('user_id')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM Gestionnaire")
+    cursor.execute( "SELECT * FROM Gestionnaire ")
     data = cursor.fetchall()
-    number_of_gestionnaires = len(data)  # Calculer le nombre de gestionnaires
-    return render_template("admin/gestionnaire.html", data=data, count=number_of_gestionnaires)
 
+    # Requête pour obtenir le rôle de l'utilisateur
+    cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+    role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+
+    conn.commit()
+    cursor.close()
+    return render_template("admin/gestionnaire.html",user_role=role,data=data)
 
 #suppression gestionnaire
 @app.route("/delete-gestionnaire/<int:id_gestionnaire>", methods=['POST'])
@@ -528,6 +570,7 @@ def delete_gestionnaire(id_gestionnaire):
     finally:
         cursor.close()
     return redirect(url_for('gestionnaire'))
+
 
 #modifier gestionnaire
 @app.route("/modifier_gestionnaire/<int:id_gestionnaire>")
@@ -549,6 +592,7 @@ def modifier_gestionnaire(id_gestionnaire):
         return redirect(url_for('gestionnaire'))
     finally:
         cursor.close()
+
 
 #update gestionnaire
 @app.route("/update_gestionnaire/<int:id_gestionnaire>", methods=['POST'])
@@ -588,9 +632,15 @@ def recherche_gestionnaire():
         cursor = conn.cursor()
         try:
             # Exécuter une requête SQL pour rechercher les gestionnaires par nom
+            user_id = session.get('user_id')
             cursor.execute("SELECT * FROM Gestionnaire WHERE NomGestionnaire LIKE ?", ('%' + query + '%',))
             data = cursor.fetchall()
-            return render_template("admin/gestionnaire.html", data=data, query=query)
+
+            # Requête pour obtenir le rôle de l'utilisateur
+            cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+            role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+
+            return render_template("admin/gestionnaire.html", user_role=role,data=data, query=query)
         except Exception as e:
             flash(f"Erreur lors de la recherche: {str(e)}", 'error')
             return redirect(url_for('gestionnaire'))  # ou toute autre page appropriée
@@ -599,35 +649,8 @@ def recherche_gestionnaire():
     else:
         flash("Veuillez entrer un terme de recherche.", 'warning')
         return redirect(url_for('gestionnaire'))
-
-
-
-
-
-
-
-
-
-
-
-##########Dashbord_vendeur############
-@app.route("/dash_vendeur")
-@login_required
-def dash_vendeur():
-    user_id = session.get('user_id')
-    cursor = conn.cursor()
-    cursor.execute( "SELECT * FROM Vendeur WHERE IdUser = ?", user_id)
-    data = cursor.fetchall()
-    conn.commit()
-    return render_template("vendeur/dash_vendeur.html", user_id =user_id, data=data)
-
-
-
-
-
-
-
-
+    
+########## FIN Dashbord_admin############
 
 
 ##########Dashbord_gestionnaire############
@@ -638,8 +661,60 @@ def dash_gestionnaire():
     cursor = conn.cursor()
     cursor.execute( "SELECT * FROM Gestionnaire WHERE IdUser = ?", user_id)
     data = cursor.fetchall()
+
+    # Requête pour obtenir le rôle de l'utilisateur
+    cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+    role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+    
     conn.commit()
-    return render_template("gestionnaire/dash_gestionnaire.html", user_id =user_id, data=data)
+    return render_template("gestionnaire/dash_gestionnaire.html", user_id =user_id,  user_role=role , data=data)
+
+# ajout_produit
+@app.route("/ajout_produit")
+@login_required
+def ajout_produit():
+    user_id = session.get('user_id')
+    cursor = conn.cursor()
+    # cursor.execute( "SELECT * FROM Gestionnaire WHERE IdUser = ?", user_id)
+    # data = cursor.fetchall()
+
+    # Requête pour obtenir le rôle de l'utilisateur
+    cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+    role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+    
+    conn.commit()
+    return render_template("gestionnaire/ajout_produit.html", user_id =user_id,  user_role=role )
+
+
+
+########## FIN Dashbord_gestionnaire############
+
+
+##########Dashbord_vendeur############
+@app.route("/dash_vendeur")
+@login_required
+def dash_vendeur():
+    user_id = session.get('user_id')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM Vendeur WHERE IdUser = ?", (user_id,))
+    data = cursor.fetchall()
+    
+    # Requête pour obtenir le rôle de l'utilisateur
+    cursor.execute("SELECT Roles FROM users WHERE IdUser = ?", (user_id,))
+    role = cursor.fetchone()[0]  # Supposons que le rôle est toujours présent
+    
+    conn.commit()
+    return render_template("vendeur/dash_vendeur.html", user_id=user_id, user_role=role, data=data)
+
+
+
+
+
+
+
+
+
+
 
 
 
